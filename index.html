@@ -7,8 +7,34 @@
     <link rel="stylesheet" href="src/style.css">
 </head>
 <body>
+    <!-- 🎮 Progress Bar -->
+    <div id="progress-container">
+        <div id="progress-bar">
+            <div id="progress-fill"></div>
+        </div>
+        <p id="progress-text">Portfolio Exploration: 0%</p>
+    </div>
+
+    <!-- �️ Mini Map -->
+    <div id="minimap">
+        <canvas id="minimap-canvas"></canvas>
+    </div>
+
+    <!-- �💬 Interaction Panel -->
     <div id="interaction-panel">
         <p id="interaction-text">🏰 3D Citadel Loading...</p>
+    </div>
+
+    <!-- 🎮 Controls Info - ქართული -->
+    <div id="controls-info">
+        <h3>🎮 მართვა</h3>
+        <p><span class="key">W</span> / <span class="key">↑</span> წინ</p>
+        <p><span class="key">S</span> / <span class="key">↓</span> უკან</p>
+        <p><span class="key">A</span> / <span class="key">←</span> მარცხნივ</p>
+        <p><span class="key">D</span> / <span class="key">→</span> მარჯვნივ</p>
+        <p><span class="key">Enter</span> ინტერაქცია</p>
+        <p><span class="key">ESC</span> დახურვა</p>
+        <div class="hint">💡 მოძებნე 5 კრისტალი!</div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script> 

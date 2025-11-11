@@ -17,20 +17,122 @@ const PLAYER_START_Z = 35;
 // 💡 გზის სიგრძე გაზრდილია 40-დან 80-მდე
 const PATH_LENGTH = 80;
 
+// 🎮 Portfolio Interactive Zones - თამაშის ზონები
 const interactiveZones = [
     {
-        name: "E-Commerce Project",
-        position: new THREE.Vector3(0, 0, 10), 
-        size: new THREE.Vector3(5, 5, 5), 
-        link: "https://yourportfolio.com/ecommerce", 
-        message: "Press [Enter] to see the **E-Commerce Platform** project."
+        name: "💡 უნარების კოშკი",
+        position: new THREE.Vector3(-15, 0, 5), 
+        size: new THREE.Vector3(6, 6, 6), 
+        color: 0xFFD700, // ოქროსფერი
+        link: null, 
+        message: "🌟 დააჭირე [Enter]-ს ჩემი ტექნიკური უნარების სანახავად!",
+        content: `
+            <h2>💻 ტექნიკური უნარები</h2>
+            <ul style="text-align: left; display: inline-block;">
+                <li>🎨 Frontend: React, Vue.js, Three.js</li>
+                <li>⚙️ Backend: Node.js, Python, Django</li>
+                <li>📊 Database: MongoDB, PostgreSQL</li>
+                <li>🎮 3D გრაფიკა: Three.js, WebGL, Blender</li>
+                <li>🚀 DevOps: Docker, AWS, CI/CD</li>
+                <li>🎯 Game Dev: Unity, Unreal Engine</li>
+            </ul>
+            <p style="margin-top: 20px; color: #4ECDC4;">✨ 5+ წლიანი გამოცდილება</p>
+        `,
+        visited: false
     },
     {
-        name: "Design Case Study",
-        position: new THREE.Vector3(15, 0, -5), 
-        size: new THREE.Vector3(3, 3, 3), 
-        link: "https://yourportfolio.com/uidesign", 
-        message: "Press [Enter] to view **UI/UX Case Studies**."
+        name: "🎨 პროექტების გალერეა",
+        position: new THREE.Vector3(15, 0, 5), 
+        size: new THREE.Vector3(6, 6, 6), 
+        color: 0xFF6B9D, // ვარდისფერი
+        link: "https://github.com/MichaLL27", 
+        message: "🎯 დააჭირე [Enter]-ს ჩემი პროექტების სანახავად!",
+        content: `
+            <h2>🚀 რჩეული პროექტები</h2>
+            <ul style="text-align: left; display: inline-block;">
+                <li>🏰 The Digital Citadel - ინტერაქტიული 3D პორტფოლიო</li>
+                <li>🛒 E-Commerce პლატფორმა AI-ით</li>
+                <li>🎮 WebGL თამაშის ძრავა</li>
+                <li>📱 React Native მობილური აპლიკაცია</li>
+                <li>🌐 Real-time Chat Application</li>
+                <li>🤖 AI-powered Chatbot</li>
+            </ul>
+            <p style="margin-top: 20px;">
+                <a href="https://github.com/MichaLL27" target="_blank" style="color: #FFD700;">
+                    👉 იხილე GitHub-ზე
+                </a>
+            </p>
+        `,
+        visited: false
+    },
+    {
+        name: "📧 საკონტაქტო პორტალი",
+        position: new THREE.Vector3(-15, 0, -10), 
+        size: new THREE.Vector3(5, 5, 5), 
+        color: 0x4ECDC4, // ფირუზი
+        link: null, 
+        message: "✉️ დააჭირე [Enter]-ს საკონტაქტო ინფორმაციის სანახავად!",
+        content: `
+            <h2>📬 დაუკავშირდი ჩემს</h2>
+            <p>📧 Email: your.email@example.com</p>
+            <p>💼 LinkedIn: linkedin.com/in/yourname</p>
+            <p>🐙 GitHub: github.com/MichaLL27</p>
+            <p>🐦 Twitter: @yourhandle</p>
+            <p>💬 Discord: YourUsername#1234</p>
+            <div style="margin-top: 20px; padding: 15px; background: rgba(78, 205, 196, 0.1); border-radius: 10px;">
+                <p style="color: #FFD700;">💡 ღია ვარ ახალი პროექტებისთვის!</p>
+                <p>დამიკავშირდი თუ გაინტერესებს თანამშრომლობა 🤝</p>
+            </div>
+        `,
+        visited: false
+    },
+    {
+        name: "🏆 ჩემ შესახებ",
+        position: new THREE.Vector3(0, 0, -5), 
+        size: new THREE.Vector3(8, 8, 8), 
+        color: 0x9B59B6, // იისფერი
+        link: null, 
+        message: "👋 დააჭირე [Enter]-ს ჩემი შესახებ გასაგებად!",
+        content: `
+            <h2>👨‍💻 ჩემ შესახებ</h2>
+            <p style="font-size: 1.1em; color: #4ECDC4;">Full-Stack დეველოპერი & 3D Web ენთუზიასტი</p>
+            <p>გატაცებული ვარ იმერსიული ვებ გამოცდილებების შექმნით!</p>
+            <p>🎓 კომპიუტერული მეცნიერების კურსდამთავრებული</p>
+            <p>🌍 მდებარეობა: საქართველო 🇬🇪</p>
+            <p>🎮 მიყვარს თამაშების და ვებ დეველოპმენტის გაერთიანება</p>
+            <p>☕ Coffee-Driven Developer</p>
+            <div style="margin-top: 20px; padding: 15px; background: rgba(155, 89, 182, 0.1); border-radius: 10px;">
+                <h3 style="color: #FFD700;">🎯 ჩემი მისია</h3>
+                <p>შევქმნა ინოვაციური და სახალისო ვებ აპლიკაციები, რომლებიც ადამიანებს აოცებს!</p>
+            </div>
+        `,
+        visited: false
+    },
+    {
+        name: "🎯 მიღწევების ცენტრი",
+        position: new THREE.Vector3(15, 0, -10), 
+        size: new THREE.Vector3(5, 5, 5), 
+        color: 0xE74C3C, // წითელი
+        link: null, 
+        message: "🏅 დააჭირე [Enter]-ს მიღწევების სანახავად!",
+        content: `
+            <h2>🏆 მიღწევები & სერტიფიკატები</h2>
+            <ul style="text-align: left; display: inline-block;">
+                <li>🥇 AWS Certified Developer - Associate</li>
+                <li>🥈 Google Cloud Professional</li>
+                <li>🥉 Hackerrank 5⭐ Problem Solver</li>
+                <li>🎨 Udemy: Advanced Three.js Course</li>
+                <li>🏅 GitHub Arctic Code Vault Contributor</li>
+                <li>⚡ Hackathon Winner 2024</li>
+            </ul>
+            <div style="margin-top: 20px; padding: 15px; background: rgba(231, 76, 60, 0.1); border-radius: 10px;">
+                <h3 style="color: #FFD700;">📊 სტატისტიკა</h3>
+                <p>✅ 50+ დასრულებული პროექტი</p>
+                <p>⭐ 1000+ GitHub Stars</p>
+                <p>👥 20+ კმაყოფილი კლიენტი</p>
+            </div>
+        `,
+        visited: false
     }
 ];
 
@@ -82,16 +184,31 @@ function initScene() {
     createTrees();
     createTombstones();
 
-    // 1.8. Create Interactive Zones
+    // 1.8. Create Interactive Zones with Visual Markers
     interactiveZones.forEach(zone => {
-        // ... (უცვლელია)
-        const geometry = new THREE.BoxGeometry(zone.size.x, zone.size.y, zone.size.z);
-        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0 });
+        // შევქმნათ თვალსაჩინო მარკერები (ანიმირებული კრისტალები)
+        const geometry = new THREE.OctahedronGeometry(2, 0); // კრისტალის ფორმა
+        const material = new THREE.MeshStandardMaterial({ 
+            color: zone.color,
+            emissive: zone.color,
+            emissiveIntensity: 0.5,
+            transparent: true, 
+            opacity: 0.7,
+            metalness: 0.8,
+            roughness: 0.2
+        });
         const zoneMesh = new THREE.Mesh(geometry, material);
         zoneMesh.position.copy(zone.position);
-        zoneMesh.position.y = PLAYER_Y_OFFSET; 
+        zoneMesh.position.y = 3; // ჰაერში ტრიალებს
         zoneMesh.userData = zone; 
+        zoneMesh.name = "interactiveZone"; // ანიმაციისთვის
         scene.add(zoneMesh);
+        
+        // დავამატოთ PointLight თითოეულ ზონას
+        const zoneLight = new THREE.PointLight(zone.color, 2, 15);
+        zoneLight.position.copy(zone.position);
+        zoneLight.position.y = 3;
+        scene.add(zoneLight);
     });
 
     // 1.9. Load Models
@@ -214,12 +331,17 @@ function loadModels() {
             citadelModel.traverse(function(node) { if (node.isMesh) node.castShadow = true; });
             scene.add(citadelModel);
             
-            interactionText.textContent = "🏰 The Digital Citadel Loaded. Explore the fortress!";
+            interactionText.textContent = "🏰 სასახლე ჩატვირთულია! შეისწავლე ციტადელი!";
+            
+            // განახლება loading progress
+            if (typeof updateLoadingProgress !== 'undefined') {
+                updateLoadingProgress();
+            }
         },
         undefined,
         function (error) {
             console.error( 'Error loading Citadel model:', error );
-            interactionText.textContent = "Error loading Citadel model. Check console for details.";
+            interactionText.textContent = "შეცდომა სასახლის ჩატვირთვისას. შეამოწმე კონსოლი.";
         }
     );
 
@@ -236,11 +358,17 @@ function loadModels() {
             
             playerBBox = new THREE.Box3().setFromObject(playerAvatar); 
             
-            interactionText.textContent = "Player Avatar Loaded. Use W, A, S, D to move!";
+            interactionText.textContent = "✅ პერსონაჟი ჩატვირთულია! გამოიყენე W, A, S, D გადასაადგილებლად!";
+            
+            // განახლება loading progress
+            if (typeof updateLoadingProgress !== 'undefined') {
+                updateLoadingProgress();
+            }
         },
         undefined,
         function (error) {
             console.error( 'Error loading player avatar:', error );
+            interactionText.textContent = "შეცდომა პერსონაჟის ჩატვირთვისას.";
         }
     )
 }

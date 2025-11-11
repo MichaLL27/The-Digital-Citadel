@@ -9,24 +9,375 @@ body {
     font-family: 'Arial', sans-serif;
     color: #fff;
     overflow: hidden;
-    /* ეს წაშლის Three.js რენდერის ტიპიურ ჩარჩოებს */
+}
+
+/* � Loading Screen */
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #0d1b2a, #1e1e3f);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.5s ease;
+}
+
+.loading-content {
+    text-align: center;
+    max-width: 400px;
+}
+
+.loading-content h1 {
+    font-size: 2.5em;
+    color: #FFD700;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    margin-bottom: 30px;
+    animation: glow 2s ease-in-out infinite;
+}
+
+@keyframes glow {
+    0%, 100% { text-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
+    50% { text-shadow: 0 0 40px rgba(255, 215, 0, 1); }
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 5px solid rgba(255, 215, 0, 0.3);
+    border-top: 5px solid #FFD700;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#loading-text {
+    color: #a8dadc;
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
+
+.loading-bar {
+    width: 100%;
+    height: 25px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #73b3c3;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(115, 179, 195, 0.5);
+}
+
+#loading-progress {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #FFD700, #FF6B9D, #4ECDC4);
+    transition: width 0.3s ease;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+}
+
+/* �🎯 Progress Bar */
+#progress-container {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    max-width: 500px;
+    z-index: 10;
+}
+
+#progress-bar {
+    width: 100%;
+    height: 25px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #73b3c3;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(115, 179, 195, 0.5);
+}
+
+#progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #FFD700, #FF6B9D, #4ECDC4, #9B59B6);
+    background-size: 200% 100%;
+    animation: gradient-shift 3s ease infinite;
+    transition: width 0.5s ease;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    position: relative;
+    overflow: hidden;
+}
+
+#progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+#progress-text {
+    text-align: center;
+    margin-top: 8px;
+    font-size: 0.9em;
+    color: #a8dadc;
+    text-shadow: 0 0 10px rgba(168, 218, 220, 0.5);
 }
 
 #interaction-panel {
-    position: absolute; /* პანელი ეკრანზე მუდმივად რომ დარჩეს */
+    position: absolute;
     bottom: 15px;
     width: 80%;
     max-width: 900px;
-    padding: 10px 20px;
-    background-color: rgba(0, 0, 0, 0.7);
-    border: 1px solid #73b3c3;
-    border-radius: 5px;
+    padding: 15px 25px;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(30, 30, 60, 0.8));
+    border: 2px solid #73b3c3;
+    border-radius: 10px;
     text-align: center;
-    z-index: 10; /* რენდერზე მაღლა რომ იყოს */
+    z-index: 10;
+    box-shadow: 0 0 20px rgba(115, 179, 195, 0.5);
+    backdrop-filter: blur(10px);
 }
 
 #interaction-text {
     margin: 0;
-    font-size: 1.1em;
+    font-size: 1.2em;
+    color: #a8dadc;
+    text-shadow: 0 0 10px rgba(168, 218, 220, 0.5);
+}
+
+/* 🎨 Modal Styles */
+#content-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #1e1e3f, #2d2d5f);
+    padding: 30px;
+    border-radius: 15px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 0 40px rgba(115, 179, 195, 0.8);
+    border: 2px solid #73b3c3;
+    position: relative;
+    animation: slideIn 0.3s ease;
+}
+
+.modal-content::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #FFD700, #FF6B9D, #4ECDC4, #9B59B6);
+    border-radius: 15px;
+    z-index: -1;
+    opacity: 0.5;
+    animation: rotate-border 4s linear infinite;
+}
+
+@keyframes rotate-border {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes slideIn {
+    from { 
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to { 
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 30px;
+    color: #ff6b9d;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.close-btn:hover {
+    color: #ff3d7f;
+    transform: rotate(90deg);
+}
+
+#modal-body h1 {
+    color: #FFD700;
+    text-align: center;
+    margin-bottom: 20px;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+}
+
+#modal-body h2 {
+    color: #4ECDC4;
+    margin-top: 15px;
+    text-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+}
+
+#modal-body ul {
+    list-style: none;
+    padding: 0;
+}
+
+#modal-body li {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(115, 179, 195, 0.3);
     color: #a8dadc;
 }
+
+#modal-body p {
+    color: #a8dadc;
+    line-height: 1.6;
+}
+
+/* Scrollbar Styling */
+.modal-content::-webkit-scrollbar {
+    width: 10px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: #73b3c3;
+    border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: #4ECDC4;
+}
+
+/* 🗺️ Mini Map */
+#minimap {
+    position: absolute;
+    bottom: 120px;
+    right: 20px;
+    width: 150px;
+    height: 150px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #73b3c3;
+    border-radius: 10px;
+    z-index: 10;
+    box-shadow: 0 0 20px rgba(115, 179, 195, 0.5);
+}
+
+#minimap-canvas {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+}
+
+/* 🎮 Controls Info */
+#controls-info {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(30, 30, 60, 0.9));
+    border: 3px solid #FFD700;
+    border-radius: 15px;
+    padding: 20px;
+    z-index: 10;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+    backdrop-filter: blur(10px);
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+#controls-info h3 {
+    margin: 0 0 15px 0;
+    color: #FFD700;
+    text-align: center;
+    font-size: 1.3em;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+    letter-spacing: 2px;
+}
+
+#controls-info p {
+    margin: 8px 0;
+    font-size: 0.95em;
+    color: #a8dadc;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.key {
+    background: linear-gradient(135deg, #4ECDC4, #73b3c3);
+    padding: 4px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    color: #000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    min-width: 35px;
+    text-align: center;
+    display: inline-block;
+}
+
+.hint {
+    margin-top: 15px;
+    padding: 10px;
+    background: rgba(255, 215, 0, 0.1);
+    border: 2px dashed #FFD700;
+    border-radius: 8px;
+    text-align: center;
+    color: #FFD700;
+    font-weight: bold;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.05); }
+}
+
