@@ -3,64 +3,117 @@ const playerSpeed = 5;
 const keys = {}; 
 let currentInteraction = null;
 
+// --- Update Camera Position ---
+function updateCamera() {
+    if (!playerAvatar) return;
+
+    // კამერის ოფსეტი (ახლოდან ხედვა)
+    const offset = new THREE.Vector3(0, 5, 10); 
+    
+    // ვბრუნავთ ოფსეტს პერსონაჟის როტაციის შესაბამისად
+    offset.applyQuaternion(playerAvatar.quaternion);
+    
+    const idealPosition = playerAvatar.position.clone().add(offset);
+
+    // პოზიციის გლუვი ცვლილება (Lerp)
+    camera.position.lerp(idealPosition, 0.1); 
+
+    // კამერა ყოველთვის უყურებს პერსონაჟის თავს
+    const lookAtPosition = playerAvatar.position.clone().add(new THREE.Vector3(0, 2, 0));
+    camera.lookAt(lookAtPosition);
+
+    // სინათლე პერსონაჟს მიჰყვება
+    if (playerLight) {
+        playerLight.position.copy(playerAvatar.position).add(new THREE.Vector3(0, 5, 0));
+    }
+}
+
 // --- Update Player Movement and Interaction ---
+// src/logic.js - განახლებული updatePlayerMovement
+
 function updatePlayerMovement(delta) { 
-    // შემოწმება, რომ ყველა ობიექტი ჩატვირთულია setup.js-დან
     if (!playerAvatar || !citadelModel) return;
 
     const prevPosition = playerAvatar.position.clone(); 
     const actualSpeed = playerSpeed * delta;
     
-    const direction = new THREE.Vector3();
     let moved = false;
     
-    // Z-Axis (წინ/უკან)
+    // --- 1. კამერის მიმართულების ვექტორები (საჭიროა მხოლოდ როტაციისთვის) ---
+    const forward = new THREE.Vector3();
+    camera.getWorldDirection(forward); 
+    forward.y = 0; 
+    forward.normalize();
+    
+    const right = new THREE.Vector3();
+    right.crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize(); 
+
+    const moveDirection = new THREE.Vector3(0, 0, 0); // ვექტორი, რომელიც განსაზღვრავს მიმართულებას
+
+    // --- 2. ლოკალური მოძრაობის ლოგიკა ---
     if (keys['w'] || keys['arrowup']) {
-        playerAvatar.position.z -= actualSpeed;
-        direction.z = -1;
+        // 💡 წინ მოძრაობა ლოკალური Z-ღერძით (ეს ითვალისწინებს ავატარის როტაციას)
+        playerAvatar.translateZ(-actualSpeed); 
+        moveDirection.add(forward);
         moved = true;
     }
     if (keys['s'] || keys['arrowdown']) {
-        playerAvatar.position.z += actualSpeed; 
-        direction.z = 1;
+        // 💡 უკან მოძრაობა ლოკალური Z-ღერძით
+        playerAvatar.translateZ(actualSpeed);
+        moveDirection.sub(forward);
         moved = true;
     }
-
-    // X-Axis (მარცხნივ/მარჯვნივ)
     if (keys['a'] || keys['arrowleft']) {
-        playerAvatar.position.x -= actualSpeed;
-        direction.x = -1;
+        // 💡 მარცხნივ მოძრაობა ლოკალური X-ღერძით
+        playerAvatar.translateX(-actualSpeed); 
+        moveDirection.sub(right);
         moved = true;
     }
     if (keys['d'] || keys['arrowright']) {
-        playerAvatar.position.x += actualSpeed; 
-        direction.x = 1;
+        // 💡 მარჯვნივ მოძრაობა ლოკალური X-ღერძით
+        playerAvatar.translateX(actualSpeed);
+        moveDirection.add(right);
         moved = true;
     }
 
-    // 💡 პერსონაჟის შემობრუნება (Rotation Logic)
-    if (moved) {
-        const angle = Math.atan2(direction.x, direction.z); 
-        playerAvatar.rotation.y = angle;
+    if (playerAvatar.position.x > 50 || playerAvatar.position.x < -50 || 
+        playerAvatar.position.z > 50 || playerAvatar.position.z < -50) {
+        
+        playerAvatar.position.copy(prevPosition);
+    }
+
+    // --- 3. როტაციის ლოგიკა (მხოლოდ იმ შემთხვევაში, თუ მოძრაობის ვექტორი შეიქმნა) ---
+    if (moved && moveDirection.lengthSq() > 0.001) { // ამოწმებს, რომ მოძრაობა მოხდა
+        
+        // --- 3.1. იდეალური როტაციის კვარტეტის შექმნა ---
+        const targetQuaternion = new THREE.Quaternion();
+        const targetAngle = Math.atan2(moveDirection.x, moveDirection.z);
+        targetQuaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), targetAngle);
+
+        // --- 3.2. Slerp (გლუვი ბრუნვა) ---
+        const currentQuaternion = playerAvatar.quaternion.clone();
+        currentQuaternion.slerp(targetQuaternion, 0.1); 
+        playerAvatar.quaternion.copy(currentQuaternion);
+        
     }
     
-    // Y-position fix (დაბლა ჩავარდნის პრევენცია)
-    playerAvatar.position.y = PLAYER_Y_OFFSET; 
+    // 💡 Head Bobbing (უცვლელია)
+    if (moved) {
+        const elapsedTime = performance.now() / 1000;
+        const bob = Math.sin(elapsedTime * 10) * 0.1; 
+        playerAvatar.position.y = PLAYER_Y_OFFSET + bob;
+    } else {
+        playerAvatar.position.y = PLAYER_Y_OFFSET; 
+    }
 
-    // --- ლოგიკა ინტერაქციული ზონებისთვის ---
+    // ... (ინტერაქციის ლოგიკა უცვლელია) ...
     currentInteraction = null;
     let interactionFound = false;
 
     interactiveZones.forEach(zone => {
-        const zoneBox = new THREE.Box3().setFromCenterAndSize(
-            zone.position,
-            zone.size
-        );
-        const playerBox = new THREE.Box3().setFromCenterAndSize(
-            playerAvatar.position,
-            new THREE.Vector3(1, 1, 1) 
-        );
-
+        const zoneBox = new THREE.Box3().setFromCenterAndSize(zone.position, zone.size);
+        const playerBox = new THREE.Box3().setFromCenterAndSize(playerAvatar.position, new THREE.Vector3(1, 1, 1));
+        
         if (playerBox.intersectsBox(zoneBox)) {
             currentInteraction = zone;
             interactionText.innerHTML = zone.message;
@@ -72,20 +125,25 @@ function updatePlayerMovement(delta) {
         interactionText.innerHTML = "Use W, A, S, D to explore the Citadel and find your projects!";
     }
     
-    // Outer Bounds Collision
+    // Outer Bounds Collision (უცვლელია)
     if (playerAvatar.position.x > 45 || playerAvatar.position.x < -45 || 
         playerAvatar.position.z > 45 || playerAvatar.position.z < -45) {
         
         playerAvatar.position.copy(prevPosition);
     }
+    
+    updateCamera(); 
 }
+
+// ... (დანარჩენი კოდი logic.js-ში უცვლელია) ...
 
 // --- Event Handlers for Movement and Interaction ---
 window.addEventListener('keydown', (event) => {
+    // 💡 შევამოწმოთ, რომ 'w', 'a', 's', 'd' არ არის ჩაკეტილი
     const key = event.key.toLowerCase();
     keys[key] = true;
+    console.log(`Key Down: ${key}`); // დაგვეხმარება დებაგინგში!
     
-    // Enter-ზე დაჭერის ლოგიკა
     if (key === 'enter' && currentInteraction && currentInteraction.link) {
         window.open(currentInteraction.link, '_blank');
         event.preventDefault();

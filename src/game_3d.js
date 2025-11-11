@@ -7,12 +7,12 @@ function animate() {
     
     const delta = clock.getDelta(); 
     
-    controls.update(); 
-    updatePlayerMovement(delta); // მოძრაობის ლოგიკა logic.js-დან
+    // controls.update(); - აღარ გვჭირდება, რადგან OrbitControls გამორთულია
+    updatePlayerMovement(delta); 
 
     renderer.render(scene, camera);
 }
 
 // --- 3. Start the application ---
-initScene(); // სცენის ინიციალიზაცია setup.js-დან
+initScene(); 
 animate();

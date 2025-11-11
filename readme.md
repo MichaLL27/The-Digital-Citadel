@@ -1,0 +1,1 @@
+https://studio.tripo3d.ai/workspace/overview?project=772ea722-5160-4c72-97c4-aa6ae100ccd5
